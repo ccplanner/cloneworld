@@ -1,109 +1,55 @@
-'''
-@authors: Richard B. Johnson
-'''
 from player import Player
 from monster import Monster
 from trigger import Trigger
+from action import Action
+from debug import *
 from utility import *
 
 class Level:
-    def __init__(self, path="", lvlnum=0):
+    __LEVEL_SIZE=(32,32)
+    __TICKS_PER_SECOND=10
+    
+    def __init__(self):
         self.reset()
-        
-        if (len(path) > 0):
-            self.load(path, lvlnum)
         
     def reset(self):
         self.ticks = 0
-        self.tiles = []
-        self.description = ""
-        self.triggers = {}
-        self.monsters = {}
+        self.top_layer = []
+        self.bottom_layer = []
+        #self.triggers = []
+        #self.monsters = []
         self.player = None
-        self.time = 0
-        self.ID = -1
+        self.x = None
+        self.y = None
         
-    def load(self, path, lvlnum):
-        debug.notify("Loading level %i from '%s'."%(lvlnum, path))
-        
-        file = open(path, 'rb')
-        file.readlines()
-        # ...
-        
-        # when out of levels:
-        # raise InvalidLevel
-        
-        file.close()
-        
-        self.ID = lvlnum
-        
-    def setPlayer(self, x, y, f):
-        debug.notify("Setting up player.")
-        self.player = Player(x, y, f)
-        return self.player.ID
-        
-    def addMonster(self, type, x, y, f):
-        debug.notify("Adding a new monster.")
-        m = Monster(type, x, y ,f)
-        self.monsters[m.ID] = m
-        return m.ID
-        
-    def addTrigger(self, t):
-        debug.notify("Adding a new trigger.")
-        self.triggers[t.ID] = t
-        return t.ID
-    
-    def isWall(self, x, y):
-        return self.dummyIsWall(x, y)
-        
-    def dummyIsWall(self, x, y):
-        return (random.randint(0, 5) == 0)
-    
-    def isDeathTile(self, x, y):
-        return False
-        #debug.raiseNotDefined()
-        
-    def updateMonsters(self):
-        for id in self.monsters.keys():
-            if (self.monsters[id].active == False):
-                continue
-            
-            x, y = self.monsters[id].getNextMove(self.isWall)
-            
-            self.monsters[id].setLocation(x, y)
-            
-            if (self.isDeathTile(x, y) == True):
-                self.monsters[id].setActive(False)
-        
-    def updatePlayer(self):
-        x, y = self.player.getNextMove(self.isWall)
-        self.player.setLocation(x, y)
+        xdim, ydim = Level.__LEVEL_SIZE
+        for i in xrange(ydim):
+            self.top_layer.append([])
+            self.bottom_layer.append([])
+            for j in xrange(xdim):
+                self.top_layer[i].append(None)
+                self.bottom_layer[i].append(None)
         
     def tick(self):
-        self.updateMonsters()
-        self.updatePlayer()
+        for e in self.top_layer:
+            if e!=None:
+                e.update()
         self.ticks += 1
-        
-    def briefLocations(self):
-        s = ""
-        
-        if (self.player != None):
-            s += "\nPlayer Location:\n"
-            s += self.player.brief() + "\n"
-        
-        if (len(self.monsters.keys()) > 0):
-            s += "\nMonster Locations:\n"
-            
-            for m in self.monsters.values():
-                s += m.brief() + "\n"
     
-        if (len(self.triggers.keys()) > 0):
-            s += "\nTrigger Locations:\n"
+    def move(self, direction):
+        if direction != Action.Wait:
+            dx,dy=Action.nextStep(direction)
+            nx,ny=self.x+dx,self.y+dy
+            if nx<0 or nx>=Level.__LEVEL_SIZE[0] or ny<0 or ny>=Level.__LEVEL_SIZE[1]:
+                error('chip tried to step out side of bounds')
+                return
             
-            for t in self.triggers.values():
-                s += t.brief() + "\n"
-                
-        return s
+            self.top_layer[ny][nx] = self.top_layer[self.y][self.x]
+            self.top_layer[self.y][self.x] = None
+            
+            self.x=nx
+            self.y=ny
+        
     
     def __str__(self):
         s = "Level Information:\n"
@@ -114,10 +60,25 @@ class Level:
         
         s += self.briefLocations()
         return s
-    
 
-class InvalidLevel(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return repr(self.value)
+class MyPlayer:
+    def __init__(self, x, y):
+        self.x=x
+        self.y=y
+    
+    def update(self):
+        return
+
+class Wall:
+    def __init__(self, x, y):
+        return
+        
+    def update(self):
+        return
+
+class Exit:
+    def __init__(self, x, y):
+        return
+    
+    def update(self):
+        return

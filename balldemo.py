@@ -1,3 +1,6 @@
+'''
+@authors: Richard B. Johnson
+'''
 import sys
 import pygame
 

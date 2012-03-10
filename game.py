@@ -1,8 +1,7 @@
-'''
-@authors: Richard B. Johnson
-'''
 from level import *
 from utility import *
+from parse_levelset import parse_levelset
+import copy
 
 class Game:
     def __init__(self, path=""):
@@ -12,51 +11,23 @@ class Game:
             self.loadPackageData(path)
         
     def reset(self):
-        self.totalscore = 0
         self.resetPackageData()
         
     def resetPackageData(self):
-        self.datafile = ""
-        self.levels = 0
+        self.level = []
         self.level = None
         
     def loadPackageData(self, path):
         file = None
         
         try:
-            # load the header information
-            file = open(path, "rb")
-            self.datafile = path
-            self.levels = 0
+            file = open(path)
+            self.levels = parse_levelset(file.read())
         except IOError as e:
             debug.error(e)
         finally:
             if (file != None):
                 file.close()
-        
-    def nextLevel(self):
-        try:
-            if (self.level != None):
-                nxtlvl = self.level.ID + 1
-            else:
-                nxtlvl = 0
-            
-            self.level = Level(self.datafile, nxtlvl)
-        except IOError:
-            debug.error("Unable to locate '%s'."%(self.datafile))
-            self.resetPackageData()
-        except InvalidLevel:
-            debug.notify("All levels have been completed.")
-        
-    def randomLevel(self):
-        try:
-            nxtlvl = random.randint(0, self.levels)
-            self.level = Level(self.datafile, nxtlvl)
-        except IOError:
-            debug.error("Unable to locate '%s'."%(self.datafile))
-            self.resetPackageData()
-        
-    def update(self):
-        self.level.tick()
-        
-    
+	
+    def setLevel(self, lvlID=1):
+        self.level=copy.deepcopy(self.levels[lvlID-1])
