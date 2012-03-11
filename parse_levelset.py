@@ -18,8 +18,7 @@ def parse_levelset(input):
                 c=dungeon[y][x*2]
                 if c in Data:
                     tileclass=Data[c]
-                    if tileclass != None:
-                        level.top_layer[y][x]=tileclass(x, y)
+                    level.top_layer[y][x]=tileclass(x, y)
                     
                     if tileclass == MyPlayer:
                         level.x=x

@@ -3,8 +3,10 @@ from state2str import *
 from action import Action
 
 #play the a clone world level using text input and output
+
 def textplay(level):
-    while 1:
+    status=Level.Playing
+    while status==Level.Playing:
         print state2str(level)
         print 'Enter move ^<>v ""=exit, anything else=wait'
         action=raw_input()
@@ -14,4 +16,5 @@ def textplay(level):
         elif action[0]=='>': direction=Action.East;
         elif action[0]=='v': direction=Action.South;
         else: direction=Action.Wait;
-        level.move(direction)
+        status=level.move(direction)
+        

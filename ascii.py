@@ -3,18 +3,18 @@ from player import Player
 
 #TODO these are unhandled
 #Wall=None
-Water=None
-Ice=None
-Fire=None
-Bomb=None
-ComputerChip=None
-Socket=None
+Water=Unimplemented
+Ice=Unimplemented
+Fire=Unimplemented
+Bomb=Unimplemented
+ComputerChip=Unimplemented
+Socket=Unimplemented
 #Exit=None
-Block=None
-HintButton=None
+Block=Unimplemented
+HintButton=Unimplemented
 
 Data={
-    ' ' : None,
+    ' ' : Empty,
     '@' : MyPlayer, #Chip himself
     '#' : Wall,
     ',' : Water,
@@ -27,3 +27,5 @@ Data={
 #    '[]' : Block,
     '?' : HintButton
 }
+
+ReverseData=dict((v,k) for k, v in Data.iteritems())
